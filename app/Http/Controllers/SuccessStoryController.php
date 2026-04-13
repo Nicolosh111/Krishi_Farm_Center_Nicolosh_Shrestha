@@ -39,54 +39,54 @@ class SuccessStoryController extends Controller
     // }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
-    ]);
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+        ]);
 
-    if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('stories', 'public');
-        $validated['image_url'] = $path;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('stories', 'public');
+            $validated['image_url'] = $path;
+        }
+
+        // Always enforce name and location from authenticated user / weather API
+        $validated['farmer_name'] = Auth::user()->name;
+        $validated['user_id'] = Auth::id();
+        $validated['status'] = 'pending';
+
+        // --- Fetch location dynamically from WeatherAPI/LocationIQ ---
+        $fallbackCity = Auth::user()?->city ?? 'Itahari';
+        $response = Http::get('http://api.weatherapi.com/v1/current.json', [
+            'key' => env('WEATHERAPI_KEY'),
+            'q'   => $fallbackCity,
+            'aqi' => 'no',
+        ]);
+        $data = $response->json();
+
+        $lat = $data['location']['lat'] ?? 26.6667;
+        $lon = $data['location']['lon'] ?? 87.2833;
+
+        $geo = Http::get("https://us1.locationiq.com/v1/reverse.php", [
+            'key' => env('LOCATIONIQ_KEY'),
+            'lat' => $lat,
+            'lon' => $lon,
+            'format' => 'json',
+        ])->json();
+
+        $address = $geo['address'] ?? [];
+        $locationParts = [
+            $address['city'] ?? null,
+            $address['county'] ?? null,
+        ];
+        $validated['location'] = implode(', ', array_filter($locationParts));
+
+        SuccessStory::create($validated);
+
+        return redirect()->route('farmer.dashboard',['section'=>'stories'])
+            ->with('success', 'Your story has been submitted and is awaiting expert review.');
     }
-
-    // Always enforce name and location from authenticated user / weather API
-    $validated['farmer_name'] = Auth::user()->name;
-    $validated['user_id'] = Auth::id();
-    $validated['status'] = 'pending';
-
-    // --- Fetch location dynamically from WeatherAPI/LocationIQ ---
-    $fallbackCity = Auth::user()?->city ?? 'Itahari';
-    $response = Http::get('http://api.weatherapi.com/v1/current.json', [
-        'key' => env('WEATHERAPI_KEY'),
-        'q'   => $fallbackCity,
-        'aqi' => 'no',
-    ]);
-    $data = $response->json();
-
-    $lat = $data['location']['lat'] ?? 26.6667;
-    $lon = $data['location']['lon'] ?? 87.2833;
-
-    $geo = Http::get("https://us1.locationiq.com/v1/reverse.php", [
-        'key' => env('LOCATIONIQ_KEY'),
-        'lat' => $lat,
-        'lon' => $lon,
-        'format' => 'json',
-    ])->json();
-
-    $address = $geo['address'] ?? [];
-    $locationParts = [
-        $address['city'] ?? null,
-        $address['county'] ?? null,
-    ];
-    $validated['location'] = implode(', ', array_filter($locationParts));
-
-    SuccessStory::create($validated);
-
-    return redirect()->route('farmer.dashboard',['section'=>'stories'])
-        ->with('success', 'Your story has been submitted and is awaiting expert review.');
-}
 
     public function like($id)
     {
@@ -135,6 +135,17 @@ class SuccessStoryController extends Controller
             'message' => 'You unliked this story!',
             'status' => 'success',
             'liked_by' => $story->likedByUsers()->pluck('name')->toArray()
+        ]);
+    }
+
+    public function fetchStatuses()
+    {
+        $stories = SuccessStory::where('user_id', Auth::id())
+                    ->select('id', 'status')
+                    ->get();
+
+        return response()->json([
+            'stories' => $stories
         ]);
     }
 

@@ -1825,6 +1825,53 @@ document.getElementById('treatment_images').addEventListener('change', function(
     }
 </script>
 
+<script>
+function refreshPendingImages() {
+    fetch('/expert/pending-images')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#diagnosis tbody');
+            tbody.innerHTML = ''; // clear old rows
+
+            data.forEach(image => {
+                tbody.innerHTML += `
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="px-4 py-2 font-medium">${image.farmer_name}</td>
+                        <td class="px-4 py-2">
+                            <img src="/storage/${image.file_path}"
+                                 alt="${image.original_name}"
+                                 class="h-16 w-16 object-cover rounded cursor-pointer"
+                                 onclick="openModal('/storage/${image.file_path}')">
+                        </td>
+                        <td class="px-4 py-2">${image.uploaded_at}</td>
+                        <td class="px-4 py-2 text-yellow-600 font-semibold">Pending</td>
+                        <td class="px-4 py-2">
+                            <form method="POST" action="/expert/diagnose/${image.id}" class="diagnosis-form">
+                                @csrf
+                                <select name="disease_id" class="border rounded p-2" required>
+                                    <option value="">Select Disease</option>
+                                    @foreach($diseases as $disease)
+                                        <option value="{{ $disease->id }}">{{ $disease->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                                    Save Diagnosis
+                                </button>
+                            </form>
+                        </td>
+                    </tr>`;
+            });
+        });
+}
+
+// Refresh every 5 seconds
+setInterval(refreshPendingImages, 5000);
+
+// Run once on page load
+refreshPendingImages();
+</script>
+
+{{--
 <section id="expert-stories" class="bg-white shadow rounded-lg p-6">
     <!-- Header -->
     <div class="mb-6">
@@ -1867,12 +1914,6 @@ document.getElementById('treatment_images').addEventListener('change', function(
                 @endif
             </div>
 
-            <!-- Like Count -->
-            {{-- <p class="text-sm text-gray-600 mt-2">
-                <i class="fas fa-thumbs-up text-green-600 mr-1"></i>
-                {{ $story->likes()->count() }} likes
-            </p> --}}
-
             <!-- Status Badge -->
             <span class="inline-block mt-3 px-3 py-1 text-sm rounded
                 @if($story->status === 'pending') bg-yellow-200 text-yellow-800
@@ -1908,7 +1949,104 @@ document.getElementById('treatment_images').addEventListener('change', function(
     <div class="mt-4">
         {{ $stories->links() }}
     </div>
+</section> --}}
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<section id="expert-stories" class="bg-white shadow rounded-lg p-6">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold">Agro Success Stories</h2>
+        <p class="text-gray-600">Review pending submissions from farmers</p>
+    </div>
+
+    <!-- Success Message (hidden by default, shown via JS) -->
+    <div id="success-msg" class="hidden bg-green-100 text-green-700 p-3 rounded mb-4"></div>
+
+    <!-- Stories Container -->
+    <div id="stories-container"></div>
 </section>
+
+<script>
+function showSuccessMessage(message) {
+    const msgBox = document.getElementById('success-msg');
+    msgBox.textContent = message;
+    msgBox.classList.remove('hidden');
+    setTimeout(() => msgBox.classList.add('hidden'), 3000);
+}
+
+function refreshExpertStories() {
+    fetch('/expert/pending-stories')
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('stories-container');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No pending stories right now.</p>';
+            } else {
+                data.forEach(story => {
+                    container.innerHTML += `
+                        <div class="border rounded p-4 mb-3" id="story-${story.id}">
+                            <h4 class="font-bold text-green-700">${story.title}</h4>
+                            <p class="text-gray-600">${story.description}</p>
+                            <p class="text-sm text-gray-500 mt-2">
+                                Submitted by: ${story.farmer_name} (${story.location})
+                            </p>
+                            <div class="mt-2">
+                                <img src="${story.image_url}" alt="${story.title}" class="h-24 w-24 object-cover rounded">
+                            </div>
+                            <span class="inline-block mt-3 px-3 py-1 text-sm rounded bg-yellow-200 text-yellow-800">
+                                Pending
+                            </span>
+                            <div class="mt-4 flex space-x-2">
+                                <button onclick="updateStoryStatus(${story.id}, 'approve')" class="bg-green-600 text-white px-4 py-1 rounded">Approve</button>
+                                <button onclick="updateStoryStatus(${story.id}, 'reject')" class="bg-red-600 text-white px-4 py-1 rounded">Reject</button>
+                            </div>
+                        </div>`;
+                });
+            }
+        });
+}
+
+function updateStoryStatus(storyId, action) {
+    fetch(`/expert/stories/${storyId}/${action}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'X-HTTP-Method-Override': 'PATCH'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const storyDiv = document.getElementById(`story-${storyId}`);
+            const badge = storyDiv.querySelector('span');
+            badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            badge.className = data.status === 'approved'
+                ? 'inline-block mt-3 px-3 py-1 text-sm rounded bg-green-200 text-green-800'
+                : 'inline-block mt-3 px-3 py-1 text-sm rounded bg-red-200 text-red-800';
+
+            const buttonsDiv = storyDiv.querySelector('div.mt-4');
+            if (buttonsDiv) {
+                buttonsDiv.innerHTML = `<span class="text-gray-600">Story ${data.status}.</span>`;
+            }
+
+            showSuccessMessage(data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showSuccessMessage("Something went wrong. Please try again.");
+    });
+}
+
+// Run once on page load
+refreshExpertStories();
+
+// Poll every 5 seconds for new submissions
+setInterval(refreshExpertStories, 5000);
+</script>
+
 {{--
 <section id="expert-consultations" class="mt-10 p-6 bg-gray-50 rounded-lg shadow">
     <h2 class="text-2xl font-semibold text-gray-800 border-b pb-2 mb-4">

@@ -12,12 +12,60 @@ use App\Models\Consultation;
 use App\Models\Query;
 use App\Models\Crop;
 use App\Models\Disease;
+use App\Models\Scheme;
+use App\Models\CropPrice;
 
 class FarmerController extends Controller
 {
     public function dashboard(Request $request)
     {
         $user = Auth::user();
+
+         // Schemes (latest subsidies)
+        // Schemes (paginated for AJAX)
+        // $schemes = Scheme::orderBy('created_at', 'desc')->paginate(5);
+
+        $schemes = Scheme::orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'schemes_page');
+        // Crop Prices (latest market rates)
+        // $prices = CropPrice::latest()->get();
+
+
+        // Market Comparison / Crop Trend
+        // $crops = CropPrice::select('crop_name')->distinct()->orderBy('crop_name')->pluck('crop_name');
+        // $selectedCrop = $request->get('crop_name', $crops->first() ?? null);
+
+        // $trendPrices = [];
+
+        // if ($selectedCrop) {
+        //     $trendPrices = CropPrice::where('crop_name', $selectedCrop)
+        //         ->orderBy('date')
+        //         ->get(['date', 'min_price', 'max_price', 'price']);
+        // }
+
+        // $prices = CropPrice::orderBy('date', 'desc')->paginate(10);
+
+        $prices = CropPrice::orderBy('date', 'desc')
+    ->paginate(10, ['*'], 'prices_page');
+
+        // if ($request->ajax()) {
+        //     return view('farmer.partials.market_prices_table', compact('prices'))->render();
+        // }
+
+        // if ($request->has('prices')) {
+        //         return view('farmer.partials.market_prices_table', compact('prices'))->render();
+        //     }
+
+        if ($request->ajax()) {
+        if ($request->has('schemes_page')) {
+            return view('farmer.partials.schemes_table', compact('schemes'))->render();
+        }
+        if ($request->has('prices_page')) {
+            return view('farmer.partials.market_prices_table', compact('prices'))->render();
+        }
+    }
+
+    $allCrops = CropPrice::select('crop_name')->distinct()->pluck('crop_name');
 
         // Plant images with diagnoses
         $plantImages = PlantImage::with([
@@ -31,7 +79,7 @@ class FarmerController extends Controller
         // Farmer’s own success stories (paginated)
         $stories = SuccessStory::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
-            ->paginate(5);
+            ->paginate(10);
 
         // Expert list with pagination
         $experts = User::where('role', 'expert')
@@ -122,7 +170,12 @@ class FarmerController extends Controller
             'totalPayments',
             'queries',
             'crops',
-            'diseases'
+            'diseases',
+            'schemes',
+            'prices',
+            // 'selectedCrop',
+            // 'trendPrices',
+            'allCrops'
 
         ));
     }
@@ -136,4 +189,17 @@ class FarmerController extends Controller
 
         return view('farmer.partials.queries', compact('queries'));
     }
+
+
+    public function marketComparisonData(Request $request)
+    {
+        $today = now()->toDateString();
+
+        $todayPrices = CropPrice::where('date', $today)
+            ->orderBy('crop_name')
+            ->get(['crop_name', 'price']);
+
+        return response()->json($todayPrices);
+    }
+
 }

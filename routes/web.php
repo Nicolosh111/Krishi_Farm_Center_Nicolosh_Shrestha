@@ -182,6 +182,7 @@ Route::post('/payment/initiate/{expert}', [PaymentController::class, 'initiatePa
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
 use App\Http\Controllers\RefundController;
+use App\Models\Disease;
 
 Route::post('/consultations/{id}/refund', [RefundController::class, 'requestRefund'])
      ->name('refund.request');
@@ -199,3 +200,17 @@ Route::get('/expert/queries', [ExpertController::class, 'queries'])
 Route::get('/farmer/queries', [FarmerController::class, 'queries'])
      ->name('farmer.queries')
      ->middleware('auth');
+
+
+Route::get('/market-comparison-data', [FarmerController::class, 'marketComparisonData'])->name('market.comparison.data');
+
+Route::get('/expert/pending-images', [DiseaseController::class, 'pendingImages']);
+
+Route::get('/prediction/{plantImage}/diagnoses', [DiseaseController::class, 'diagnoses']);
+
+Route::get('/expert/pending-stories', [ExpertController::class, 'pendingStories']);
+
+Route::get('/farmer/stories/statuses', [SuccessStoryController::class, 'fetchStatuses'])
+    ->name('farmer.stories.statuses')
+    ->middleware('auth');
+

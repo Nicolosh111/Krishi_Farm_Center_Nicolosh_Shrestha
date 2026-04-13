@@ -50,6 +50,17 @@
    class="nav-link flex items-center p-2 rounded hover:bg-yellow-500 hover:text-white transition-colors duration-300 ease-in-out">
     <i class="fa fa-comments mr-2"></i> My Queries
 </a>
+
+<a href="#" data-section="schemes"
+   class="nav-link flex items-center p-2 rounded hover:bg-yellow-500 hover:text-white transition-colors duration-300 ease-in-out">
+    <i class="fa fa-university mr-2"></i> Government Schemes
+</a>
+
+<a href="#" data-section="market"
+   class="nav-link flex items-center p-2 rounded hover:bg-yellow-500 hover:text-white transition-colors duration-300 ease-in-out">
+    <i class="fa fa-line-chart mr-2"></i> Market Prices
+</a>
+
   </nav>
 <div class="p-4 border-t border-green-700">
     <a href="{{ route('home') }}"
@@ -481,6 +492,7 @@ function backToConsultations() {
         }
     }, 5000);
 </script>
+
 <section id="payments" class="p-6 bg-white rounded shadow mt-6">
     <h2 class="text-xl font-bold mb-4">My Payments</h2>
 
@@ -988,6 +1000,340 @@ function backToConsultations() {
     </form>
 </section> --}}
 
+{{-- <section id="schemes" class="p-6 bg-white rounded shadow mt-6 hidden">
+    <h2 class="text-xl font-bold mb-4">Government Schemes</h2>
+     <h3 class="text-md font-semibold text-gray-600 mb-4">
+        Source: Ministry of Agriculture and Livestock Development (MoALD), Nepal
+    </h3>
+
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-100 text-left">
+                <th class="p-2">Title</th>
+                <th class="p-2">Description</th>
+                <th class="p-2">Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($schemes as $scheme)
+                <tr class="border-b">
+                    <td class="p-2">{{ $scheme->title }}</td>
+                    <td class="p-2">{{ $scheme->description }}</td>
+                    <td class="p-2">
+                        <a href="{{ $scheme->link }}" target="_blank"
+                        class="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-3 py-1 rounded inline-block">
+                            View Notice
+                        </a>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="3" class="p-4 text-center text-gray-500">
+                        No schemes available.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</section> --}}
+{{--
+<section id="market" class="p-6 bg-white rounded shadow mt-6 hidden">
+    <h2 class="text-xl font-bold mb-4">Market Prices</h2>
+    <h3 class="text-md font-semibold text-gray-600 mb-4">
+        Source: Kalimati Fruits and Vegetable Market Development Board, Kathmandu
+    </h3>
+
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-100 text-left">
+                <th class="p-2">Crop</th>
+                <th class="p-2">Unit</th>
+                <th class="p-2">Min Price</th>
+                <th class="p-2">Max Price</th>
+                <th class="p-2">Average Price</th>
+                <th class="p-2">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($prices as $price)
+                <tr class="border-b">
+                    <td class="p-2">{{ $price->crop_name }}</td>
+                    <td class="p-2">{{ $price->location }}</td>
+                    <td class="p-2">{{ number_format($price->min_price, 2) }}</td>
+                    <td class="p-2">{{ number_format($price->max_price, 2) }}</td>
+                    <td class="p-2">{{ number_format($price->price, 2) }}</td>
+                    <td class="p-2">{{ $price->date }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="p-4 text-center text-gray-500">
+                        No prices available.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</section> --}}
+
+{{-- <section id="market" class="p-6 bg-white rounded shadow mt-6">
+    <h2 class="text-xl font-bold mb-2 text-green-700">Market Prices</h2>
+    <h3 class="text-md font-semibold text-gray-600 mb-4">
+        Source: Kalimati Fruits and Vegetable Market Development Board, Kathmandu
+    </h3>
+
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-100 text-left">
+                <th class="p-2">Crop</th>
+                <th class="p-2">Unit</th>
+                <th class="p-2">Min Price</th>
+                <th class="p-2">Max Price</th>
+                <th class="p-2">Average Price</th>
+                <th class="p-2">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($prices as $price)
+                <tr class="border-b">
+                    <td class="p-2">{{ $price->crop_name }}</td>
+                    <td class="p-2">{{ $price->location }}</td>
+                    <td class="p-2">{{ number_format($price->min_price, 2) }}</td>
+                    <td class="p-2">{{ number_format($price->max_price, 2) }}</td>
+                    <td class="p-2">{{ number_format($price->price, 2) }}</td>
+                    <td class="p-2">{{ $price->date }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="p-4 text-center text-gray-500">
+                        No prices available.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        {{ $prices->links() }}
+    </div>
+</section>
+ --}}
+
+ {{-- <section id="market" class="p-6 bg-white rounded shadow mt-6">
+    <h2 class="text-xl font-bold mb-2 text-green-700">Market Prices</h2>
+    <h3 class="text-md font-semibold text-gray-600 mb-4">
+        Source: Kalimati Fruits and Vegetable Market Development Board, Kathmandu
+    </h3>
+
+    <div id="market-table">
+        @include('farmer.partials.market_prices_table', ['prices' => $prices])
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const marketTable = document.querySelector('#market-table');
+
+    marketTable.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A' && e.target.closest('.pagination')) {
+            e.preventDefault();
+            const url = e.target.getAttribute('href');
+
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(response => response.text())
+                .then(html => {
+                    marketTable.innerHTML = html;
+                });
+        }
+    });
+});
+</script> --}}
+
+{{-- <section id="schemes" class="p-6 bg-white rounded shadow mt-6">
+    <h2 class="text-xl font-bold mb-2 text-green-700">Government Schemes</h2>
+    <h3 class="text-md font-semibold text-gray-600 mb-4">
+        Source: Ministry of Agriculture and Livestock Development (MoALD), Nepal
+    </h3>
+
+    <div id="schemes-table">
+        @include('farmer.partials.schemes_table', ['schemes' => $schemes])
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const schemesTable = document.querySelector('#schemes-table');
+
+    schemesTable.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        const url = link.getAttribute('href');
+        if (!url || !url.includes('page=')) return;
+
+        e.preventDefault();
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                schemesTable.innerHTML = html;
+            })
+            .catch(err => console.error('Error fetching page:', err));
+    });
+});
+</script> --}}
+
+<section id="schemes" class="p-6 bg-white rounded shadow mt-6">
+    <h2 class="text-xl font-bold mb-2 text-green-700">Government Schemes</h2>
+    <h3 class="text-md font-semibold text-gray-600 mb-4">
+        Source: Ministry of Agriculture and Livestock Development (MoALD), Nepal
+    </h3>
+
+    <div id="schemes-table">
+        @include('farmer.partials.schemes_table', ['schemes' => $schemes])
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const schemesTable = document.querySelector('#schemes-table');
+
+    schemesTable.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        const url = link.getAttribute('href');
+        if (!url || !url.includes('schemes_page')) return;
+
+        e.preventDefault();
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                schemesTable.innerHTML = html;
+            })
+            .catch(err => console.error('Error fetching page:', err));
+    });
+});
+</script>
+
+<section id="market" class="p-6 bg-white rounded shadow mt-6">
+    <h2 class="text-xl font-bold mb-2 text-green-700">Market Prices</h2>
+    <h3 class="text-md font-semibold text-gray-600 mb-4">
+        Source: Kalimati Fruits and Vegetable Market Development Board, Kathmandu
+    </h3>
+
+    <!-- Table -->
+    <div id="market-table">
+        @include('farmer.partials.market_prices_table', ['prices' => $prices])
+    </div>
+
+    <!-- Market Comparison Bar Chart -->
+    <h3 class="text-md font-semibold text-gray-600 mt-6 mb-2">Market Comparison (Today)</h3>
+    <div class="mb-2 space-x-2">
+        <button id="showAll" class="bg-green-600 text-white px-3 py-1 rounded">Show All</button>
+        <button id="showTop10Expensive" class="bg-blue-600 text-white px-3 py-1 rounded">Top 10 Expensive</button>
+        <button id="showTop10Cheapest" class="bg-orange-600 text-white px-3 py-1 rounded">Top 10 Cheapest</button>
+    </div>
+    <canvas id="marketComparisonChart" width="400" height="200"></canvas>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const marketTable = document.querySelector('#market-table');
+    const ctxComparison = document.getElementById('marketComparisonChart').getContext('2d');
+    let marketComparisonChart = null;
+    let mode = "all"; // "all", "expensive", "cheapest"
+
+    function updateComparisonChart() {
+        fetch('/market-comparison-data')
+            .then(response => response.json())
+            .then(todayPrices => {
+                let labels, data;
+
+                if (mode === "expensive") {
+                    const sorted = [...todayPrices].sort((a, b) => b.price - a.price);
+                    const top10 = sorted.slice(0, 10);
+                    labels = top10.map(item => item.crop_name);
+                    data = top10.map(item => parseFloat(item.price));
+                } else if (mode === "cheapest") {
+                    const sorted = [...todayPrices].sort((a, b) => a.price - b.price);
+                    const bottom10 = sorted.slice(0, 10);
+                    labels = bottom10.map(item => item.crop_name);
+                    data = bottom10.map(item => parseFloat(item.price));
+                } else {
+                    labels = todayPrices.map(item => item.crop_name);
+                    data = todayPrices.map(item => parseFloat(item.price));
+                }
+
+                if (marketComparisonChart) marketComparisonChart.destroy();
+
+                marketComparisonChart = new Chart(ctxComparison, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: mode === "expensive" ? "Top 10 Expensive Crops (Rs)" :
+                                   mode === "cheapest" ? "Top 10 Cheapest Crops (Rs)" :
+                                   "Today's Prices (Rs)",
+                            data: data,
+                            backgroundColor: 'rgba(34,197,94,0.6)',
+                            borderColor: 'rgba(34,197,94,1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { title: { display: true, text: 'Crop' } },
+                            y: { title: { display: true, text: 'Price (Rs)' } }
+                        }
+                    }
+                });
+            });
+    }
+
+    // Initial render
+    updateComparisonChart();
+
+    // Button handlers
+    document.getElementById('showAll').addEventListener('click', () => {
+        mode = "all";
+        updateComparisonChart();
+    });
+    document.getElementById('showTop10Expensive').addEventListener('click', () => {
+        mode = "expensive";
+        updateComparisonChart();
+    });
+    document.getElementById('showTop10Cheapest').addEventListener('click', () => {
+        mode = "cheapest";
+        updateComparisonChart();
+    });
+
+    // Handle AJAX pagination (table only)
+    marketTable.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        const url = link.getAttribute('href');
+        if (!url || !url.includes('prices_page')) return;
+
+        e.preventDefault();
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                marketTable.innerHTML = html;
+                // Chart does NOT change here — it always shows all crops (or top 10 depending on mode)
+            })
+            .catch(err => console.error('Error fetching page:', err));
+    });
+});
+</script>
+
+
 <!-- Farmer Profile Section -->
 <section id="profile">
     <h2 class="text-2xl font-semibold mb-6">Farmer Profile</h2>
@@ -1323,19 +1669,28 @@ document.addEventListener("DOMContentLoaded", function() {
                     </div>
 
                     <!-- Like Button -->
-                    <form method="POST" action="{{ route('stories.like', $story->id) }}" class="mt-3">
+                    {{-- <form method="POST" action="{{ route('stories.like', $story->id) }}" class="mt-3">
                         @csrf
                         <button type="submit" class="text-red-600 hover:text-red-800 flex items-center space-x-1">
                             <i class="fas fa-thumbs-up"></i>
                             <span>Like ({{ $story->likes_count }})</span>
                         </button>
-                    </form>
+                    </form> --}}
 
                     <!-- Status Badge -->
-                    <span class="inline-block mt-3 px-3 py-1 text-sm rounded
+                    {{-- <span class="inline-block mt-3 px-3 py-1 text-sm rounded
                         @if($story->status === 'pending') bg-yellow-200 text-yellow-800
                         @elseif($story->status === 'approved') bg-green-200 text-green-800
                         @else bg-red-200 text-red-800 @endif">
+                        {{ ucfirst($story->status) }}
+                    </span> --}}
+
+                    <!-- Status Badge -->
+                    <span id="story-status-{{ $story->id }}"
+                        class="inline-block mt-3 px-3 py-1 text-sm rounded
+                                @if($story->status === 'pending') bg-yellow-200 text-yellow-800
+                                @elseif($story->status === 'approved') bg-green-200 text-green-800
+                                @else bg-red-200 text-red-800 @endif">
                         {{ ucfirst($story->status) }}
                     </span>
                 </div>
@@ -1350,6 +1705,37 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
     </div>
 </section>
+
+<script>
+    async function updateStoryStatuses() {
+        try {
+            const response = await fetch("{{ route('farmer.stories.statuses') }}");
+            const data = await response.json();
+
+            data.stories.forEach(story => {
+                const statusEl = document.getElementById(`story-status-${story.id}`);
+                if(statusEl && statusEl.textContent.toLowerCase() !== story.status) {
+                    statusEl.textContent = story.status.charAt(0).toUpperCase() + story.status.slice(1);
+
+                    // Update classes
+                    statusEl.classList.remove('bg-yellow-200','text-yellow-800','bg-green-200','text-green-800','bg-red-200','text-red-800');
+                    if(story.status === 'pending') {
+                        statusEl.classList.add('bg-yellow-200','text-yellow-800');
+                    } else if(story.status === 'approved') {
+                        statusEl.classList.add('bg-green-200','text-green-800');
+                    } else {
+                        statusEl.classList.add('bg-red-200','text-red-800');
+                    }
+                }
+            });
+        } catch(err) {
+            console.error('Failed to fetch story statuses:', err);
+        }
+    }
+
+    // Poll every 5 seconds
+    setInterval(updateStoryStatuses, 5000);
+</script>
 
 <section id="ask-queries" class="mt-10 p-6 bg-gray-50 rounded-lg shadow">
     <h2 class="text-2xl font-semibold text-gray-800 border-b pb-2 mb-4">

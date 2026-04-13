@@ -495,5 +495,39 @@ if ($request->hasFile('treatment_images')) {
         ));
     }
 
+    public function pendingImages()
+    {
+        $images = PlantImage::with('user')
+            ->whereDoesntHave('diagnoses') // only pending
+            ->latest()
+            ->get()
+            ->map(function($img) {
+                return [
+                    'id' => $img->id,
+                    'farmer_name' => $img->user->name ?? 'Unknown',
+                    'file_path' => $img->file_path,
+                    'original_name' => $img->original_name,
+                    'uploaded_at' => $img->created_at->format('d M Y, h:i A'),
+                ];
+            });
+
+        return response()->json($images);
+    }
+
+    public function diagnoses($plantImageId)
+    {
+        $plantImage = PlantImage::with(['diagnoses.disease','diagnoses.expert'])
+                                ->findOrFail($plantImageId);
+
+        $diagnoses = $plantImage->diagnoses->map(function($diag) {
+            return [
+                'disease_name' => $diag->disease->name,
+                'expert_name'  => $diag->expert->name ?? $diag->expert->username ?? 'Unknown Expert',
+            ];
+        });
+
+        return response()->json($diagnoses);
+    }
+
 
 }

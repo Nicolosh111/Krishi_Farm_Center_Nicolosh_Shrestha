@@ -176,16 +176,28 @@
         <h2>Resources</h2>
 
         {{-- External Links --}}
-        @if($crop->cropResources->where('type','link')->count())
+        {{-- @if($crop->cropResources->where('type','link')->count())
             <h3>External Links</h3>
             <div class="resource-list">
-                @foreach($crop->cropResources->where('type','link') as $resource)        
+                @foreach($crop->cropResources->where('type','link') as $resource)
                     <a href="{{ $resource->file }}" target="_blank" class="resource-btn">
                         <i class="fas fa-link"></i> {{ $resource->title }}
                     </a>
                 @endforeach
             </div>
-        @endif
+        @endif --}}
+
+        {{-- External Links --}}
+@if($crop->cropResources->where('type','link')->count())
+    <h3>External Links</h3>
+    <div class="resource-list">
+        @foreach($crop->cropResources->where('type','link') as $resource)
+            <a href="{{ $resource->link }}" target="_blank" class="resource-btn">
+                <i class="fas fa-link"></i> {{ $resource->title }}
+            </a>
+        @endforeach
+    </div>
+@endif
 
         {{-- Documents & Images --}}
         @php
